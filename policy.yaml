@@ -1,0 +1,65 @@
+# Sentinel policy — declarative, deterministic governance.
+# Edited by operators without a code deploy. Two parts: role-based tool access
+# (RBAC) and an ordered list of rules. The FIRST matching rule wins, so put
+# hard denials before approvals. Anything unmatched is DEFERRED to the risk
+# engine (M2).
+
+# --- Role-based access: which tools may each agent role invoke at all? ---
+# Tool patterns use shell-style globs ("git.*" matches "git.push", "git.pull").
+roles:
+  deployer:
+    allowed_tools: ["shell.exec", "git.*", "ci.*", "db.query", "http.*"]
+  analyst:
+    allowed_tools: ["db.query", "http.get"]
+  support-bot:
+    allowed_tools: ["ticketing.*", "http.get"]
+
+# --- Rules: first match wins. Each 'match' is an AND of the fields present. ---
+#   tool           glob over ctx.tool
+#   system / env   case-insensitive equality over ctx.target.system / .env
+#   action_matches regex searched against ctx.action
+rules:
+  # ---- Hard denials (never auto-approve, never escalate) ----
+  - name: deny-secrets-access
+    match: { system: "secrets" }
+    effect: deny
+    reason: "Direct secrets-store access is not permitted for agents"
+
+  - name: deny-prod-db-drop-truncate
+    match:
+      tool: "db.*"
+      env: "prod"
+      action_matches: '(?i)\b(drop|truncate)\b'
+    effect: deny
+    reason: "DROP/TRUNCATE on a production database is never auto-approved"
+
+  # ---- Require a human ----
+  - name: approve-prod-db-writes
+    match:
+      tool: "db.*"
+      env: "prod"
+      action_matches: '(?i)\b(delete|update|alter|insert)\b'
+    effect: require_approval
+    reason: "Write/DDL against a production database needs human approval"
+
+  - name: approve-force-push-protected
+    match:
+      action_matches: '(?i)git\s+push\b.*(--force|-f)\b.*\b(main|master|release)\b'
+    effect: require_approval
+    reason: "Force-push to a protected branch needs human approval"
+
+  - name: approve-prod-deploy
+    match:
+      tool: "ci.*"
+      env: "prod"
+      action_matches: '(?i)\b(deploy|release|rollout)\b'
+    effect: require_approval
+    reason: "Production deployment needs human approval"
+
+  # ---- Fast-path allow for clearly safe, read-only work ----
+  - name: allow-readonly-select
+    match:
+      tool: "db.query"
+      action_matches: '(?i)^\s*select\b'
+    effect: allow
+    reason: "Read-only SELECT query"

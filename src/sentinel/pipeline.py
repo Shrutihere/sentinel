@@ -43,5 +43,10 @@ class DecisionPipeline:
 
 
 def build_pipeline() -> DecisionPipeline:
-    """Assemble the active pipeline. Stages get appended here as milestones land."""
-    return DecisionPipeline(stages=[])
+    """Assemble the active pipeline. Stages get appended here as milestones land.
+
+    Import is lazy to avoid a cycle (policy imports Stage from this module).
+    """
+    from .policy import PolicyStage
+
+    return DecisionPipeline(stages=[PolicyStage()])
