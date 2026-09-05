@@ -48,5 +48,7 @@ def build_pipeline() -> DecisionPipeline:
     Import is lazy to avoid a cycle (policy imports Stage from this module).
     """
     from .policy import PolicyStage
+    from .risk import RiskStage
 
-    return DecisionPipeline(stages=[PolicyStage()])
+    # Policy (deterministic, cheap) runs first; the risk engine handles the rest.
+    return DecisionPipeline(stages=[PolicyStage(), RiskStage()])

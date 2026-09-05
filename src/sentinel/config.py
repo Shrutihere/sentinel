@@ -16,8 +16,16 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./sentinel.db"
     # Path to the declarative policy file (M1).
     policy_path: str = "policy.yaml"
-    # Used from M2 onward (the risk scorer).
+
+    # --- Risk engine (M2) ---
+    # Which LLM backs the contextual risk scorer:
+    #   "auto"  -> gemini if a key is set, else anthropic if set, else mock
+    #   "mock" | "gemini" | "anthropic" -> force that provider
+    risk_provider: str = "auto"
+    gemini_api_key: str | None = None
+    gemini_model: str = "gemini-3.6-flash"
     anthropic_api_key: str | None = None
+    anthropic_model: str = "claude-sonnet-4-6"
 
 
 settings = Settings()

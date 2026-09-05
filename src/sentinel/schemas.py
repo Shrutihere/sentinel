@@ -41,6 +41,9 @@ class DecisionResult(BaseModel):
     decision: Decision
     stage: str                        # which stage decided (or "passthrough")
     reasons: list[str] = Field(default_factory=list)
+    # Populated by the risk stage (M2); None when a deterministic stage decided.
+    severity: str | None = None
+    score: float | None = None
 
 
 class ToolCallResponse(BaseModel):
@@ -51,6 +54,8 @@ class ToolCallResponse(BaseModel):
     reasons: list[str]
     audit_id: int
     executed: bool
+    severity: str | None = None
+    score: float | None = None
 
 
 class AuditEntry(BaseModel):
@@ -67,3 +72,5 @@ class AuditEntry(BaseModel):
     stage: str
     reasons: list[str]
     executed: bool
+    severity: str | None = None
+    score: float | None = None

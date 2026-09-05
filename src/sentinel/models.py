@@ -7,7 +7,7 @@ autonomous actions and the decision Sentinel made about each one.
 
 from datetime import datetime, timezone
 
-from sqlalchemy import JSON, Boolean, DateTime, Integer, String
+from sqlalchemy import JSON, Boolean, DateTime, Float, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
 from .db import Base
@@ -38,3 +38,6 @@ class AuditLog(Base):
     stage: Mapped[str] = mapped_column(String(48))
     reasons: Mapped[list] = mapped_column(JSON, default=list)
     executed: Mapped[bool] = mapped_column(Boolean, default=False)
+    # Risk-engine output (M2); null when a deterministic stage decided.
+    severity: Mapped[str | None] = mapped_column(String(16), nullable=True, index=True)
+    score: Mapped[float | None] = mapped_column(Float, nullable=True)

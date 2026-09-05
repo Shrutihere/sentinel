@@ -25,9 +25,10 @@ def test_tool_call_passes_through_and_is_audited():
     assert r.status_code == 200
 
     body = r.json()
-    assert body["decision"] == "allow"        # M0 pass-through
+    # A benign action: guardrails stay silent, the risk scorer rates it low -> allow.
+    assert body["decision"] == "allow"
     assert body["executed"] is True
-    assert body["stage"] == "passthrough"
+    assert body["stage"].startswith("risk:")   # the risk stage now decides low-risk actions
     assert body["audit_id"] >= 1
 
 

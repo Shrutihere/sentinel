@@ -25,6 +25,8 @@ def record(
         stage=result.stage,
         reasons=result.reasons,
         executed=executed,
+        severity=result.severity,
+        score=result.score,
     )
     session.add(entry)
     session.commit()

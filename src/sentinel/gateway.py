@@ -35,6 +35,8 @@ def tool_call(
         reasons=result.reasons,
         audit_id=entry.id,
         executed=executed,
+        severity=result.severity,
+        score=result.score,
     )
 
 
@@ -57,6 +59,8 @@ def get_audit(
             stage=e.stage,
             reasons=e.reasons,
             executed=e.executed,
+            severity=e.severity,
+            score=e.score,
         )
         for e in entries
     ]

@@ -11,12 +11,18 @@ dependencies = [
     "pydantic>=2.7",
     "pydantic-settings>=2.3",
     "pyyaml>=6.0",
+    "google-genai>=0.3",
 ]
 
 [project.optional-dependencies]
 dev = [
     "pytest>=8",
     "httpx>=0.27",
+]
+# Optional alternative risk-scorer backend (Claude). Not needed for the default
+# Gemini/Mock path; install with:  uv pip install -e ".[anthropic]"
+anthropic = [
+    "anthropic>=0.40",
 ]
 
 [build-system]

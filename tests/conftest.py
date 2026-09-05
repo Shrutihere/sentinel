@@ -11,3 +11,5 @@ _test_db = os.path.join(tempfile.gettempdir(), "sentinel_test.db")
 if os.path.exists(_test_db):
     os.remove(_test_db)
 os.environ["SENTINEL_DATABASE_URL"] = f"sqlite:///{_test_db}"
+# Force the keyless Mock risk provider so tests never hit the network.
+os.environ["SENTINEL_RISK_PROVIDER"] = "mock"
