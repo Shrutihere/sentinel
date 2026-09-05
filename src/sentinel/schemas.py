@@ -56,6 +56,9 @@ class ToolCallResponse(BaseModel):
     executed: bool
     severity: str | None = None
     score: float | None = None
+    # M3: when decision is require_approval, the id of the parked request.
+    status: str = "executed"          # executed | pending_approval | denied
+    approval_id: int | None = None
 
 
 class AuditEntry(BaseModel):
@@ -74,3 +77,36 @@ class AuditEntry(BaseModel):
     executed: bool
     severity: str | None = None
     score: float | None = None
+
+
+class ApprovalStatus(str, Enum):
+    PENDING = "pending"
+    APPROVED = "approved"
+    DENIED = "denied"
+
+
+class ApprovalView(BaseModel):
+    """Read model for a parked approval request."""
+
+    id: int
+    created_at: str
+    status: ApprovalStatus
+    agent_id: str
+    role: str | None
+    tool: str
+    action: str
+    target: dict
+    severity: str | None
+    score: float | None
+    reasons: list[str]
+    decided_at: str | None
+    decided_by: str | None
+    note: str | None
+    executed: bool
+
+
+class ApprovalDecisionRequest(BaseModel):
+    """Body for approve/deny — who is deciding, and an optional note."""
+
+    decided_by: str
+    note: str | None = None
