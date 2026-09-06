@@ -17,3 +17,6 @@ build/
 
 # OS
 .DS_Store
+
+# eval cache (LLM responses)
+eval/.cache/
