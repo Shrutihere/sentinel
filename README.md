@@ -23,7 +23,7 @@ Built in milestones (see `../cv/agent-risk-eval-scope.md` for the full scope):
 - [x] **M0 — Pass-through gateway + audit** — the intercept + append-only audit trail
 - [x] **M1 — Policy layer** — RBAC + declarative allow/deny/require-approval rules
 - [x] **M2 — ⭐ Risk engine** — hybrid deterministic guardrails + LLM contextual scorer (Gemini/Claude/Mock)
-- [ ] M3 — Approval workflow (human-in-the-loop)
+- [x] **M3 — Approval workflow** — durable human-in-the-loop approve/deny with attribution + idempotency
 - [ ] M4 — ⭐ Eval harness + labeled dataset (the proof)
 - [ ] M5 — React dashboard, Docker, live deploy
 
