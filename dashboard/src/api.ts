@@ -1,5 +1,7 @@
 // Typed client for the Sentinel API.
-const BASE = import.meta.env.VITE_API_BASE ?? "http://127.0.0.1:8000";
+// Default to same-origin relative paths: works in the container (API serves the
+// dashboard) and in dev (Vite proxies /v1 and /health to the backend).
+const BASE = import.meta.env.VITE_API_BASE ?? "";
 
 export type Decision = "allow" | "require_approval" | "deny";
 

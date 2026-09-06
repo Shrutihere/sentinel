@@ -36,6 +36,8 @@ class Settings(BaseSettings):
         "http://127.0.0.1:5173",
     ]
     eval_results_path: str = "eval/results.json"
+    # If this dir exists (the built dashboard), the API serves it at "/".
+    static_dir: str = "dashboard/dist"
 
 
 settings = Settings()

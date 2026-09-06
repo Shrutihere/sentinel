@@ -27,15 +27,24 @@ Built in milestones (see `../cv/agent-risk-eval-scope.md` for the full scope):
 - [x] **M2 — ⭐ Risk engine** — hybrid deterministic guardrails + LLM contextual scorer (Gemini/Claude/Mock)
 - [x] **M3 — Approval workflow** — durable human-in-the-loop approve/deny with attribution + idempotency
 - [x] **M4 — ⭐ Eval harness + labeled dataset** — 62-case benchmark; 97.8% catch, 2.2% false-approve, 100% injection catch
-- [x] **M5 (in progress)** — ✅ React dashboard · ⬜ Docker/compose · ⬜ live deploy
+- [x] **M5 (in progress)** — ✅ React dashboard · ✅ Docker/compose (Postgres) · ⬜ live deploy
 
 ## Quickstart
 
+**Docker (full stack — API + dashboard + Postgres, one command):**
+
 ```bash
-uv venv
-uv pip install -e ".[dev]"
-uv run pytest -q                    # run the tests
-uv run uvicorn sentinel.main:app --reload   # start the API (http://127.0.0.1:8000/docs)
+cp .env.example .env        # add SENTINEL_GEMINI_API_KEY, or set SENTINEL_RISK_PROVIDER=mock
+docker compose up --build   # → http://localhost:8000  (dashboard + API on one origin)
+```
+
+**Local (Python + Node):**
+
+```bash
+uv venv && uv pip install -e ".[dev]"
+uv run pytest -q                            # run the tests
+uv run uvicorn sentinel.main:app --reload   # API  → http://127.0.0.1:8000/docs
+cd dashboard && npm install && npm run dev   # UI   → http://localhost:5173 (proxies to the API)
 ```
 
 ## Try it
