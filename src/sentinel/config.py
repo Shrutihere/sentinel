@@ -23,7 +23,9 @@ class Settings(BaseSettings):
     #   "mock" | "gemini" | "anthropic" -> force that provider
     risk_provider: str = "auto"
     gemini_api_key: str | None = None
-    gemini_model: str = "gemini-3.6-flash"
+    # flash-lite: cheap, fast, and a far more generous free-tier daily quota than
+    # the premium flash models (which allow only ~20 requests/day for free).
+    gemini_model: str = "gemini-flash-lite-latest"
     anthropic_api_key: str | None = None
     anthropic_model: str = "claude-sonnet-4-6"
 

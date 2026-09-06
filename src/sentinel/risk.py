@@ -61,6 +61,19 @@ class RiskAssessment(BaseModel):
     source: str = "unknown"              # guardrail | llm:gemini | llm:anthropic | mock | error
 
 
+def _norm_score(x, severity: Severity) -> float:
+    """Coerce an LLM-provided score into [0, 1]. Models sometimes emit a 0–100
+    value or something out of range; normalize rather than crash. Falls back to
+    the severity's nominal score if unparseable."""
+    try:
+        v = float(x)
+    except (TypeError, ValueError):
+        return _SCORE[severity]
+    if v > 1.0:
+        v = v / 100.0 if v <= 100.0 else 1.0
+    return max(0.0, min(1.0, v))
+
+
 def _dims_for(sev: Severity) -> RiskDimensions:
     if sev in (Severity.HIGH, Severity.CRITICAL):
         return RiskDimensions(
@@ -215,8 +228,8 @@ class GeminiProvider:
         )
         out = _LLMRiskOutput.model_validate_json(resp.text)
         return RiskAssessment(
-            severity=out.severity, score=out.score, reasons=out.reasons,
-            dimensions=out.dimensions, source=self.source,
+            severity=out.severity, score=_norm_score(out.score, out.severity),
+            reasons=out.reasons, dimensions=out.dimensions, source=self.source,
         )
 
 
@@ -248,8 +261,8 @@ class ClaudeProvider:
         payload = next(b.input for b in msg.content if b.type == "tool_use")
         out = _LLMRiskOutput.model_validate(payload)
         return RiskAssessment(
-            severity=out.severity, score=out.score, reasons=out.reasons,
-            dimensions=out.dimensions, source=self.source,
+            severity=out.severity, score=_norm_score(out.score, out.severity),
+            reasons=out.reasons, dimensions=out.dimensions, source=self.source,
         )
 
 
