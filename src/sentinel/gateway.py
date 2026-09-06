@@ -5,10 +5,14 @@ pipeline, records the outcome in the audit log, and (in M0) executes a mock tool
 when the action is allowed. Real/sandboxed execution arrives in later milestones.
 """
 
+import json
+from pathlib import Path
+
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from . import approvals, audit, notify
+from .config import settings
 from .db import get_session
 from .pipeline import build_pipeline
 from .schemas import (
@@ -124,6 +128,20 @@ def deny(
     session: Session = Depends(get_session),
 ) -> ApprovalView:
     return _decide(approval_id, body, approved=False, session=session)
+
+
+# --------------------------------------------------------------------------- #
+# M5 — serve the latest evaluation results to the dashboard
+# --------------------------------------------------------------------------- #
+@router.get("/v1/eval/results")
+def eval_results() -> dict:
+    p = Path(settings.eval_results_path)
+    if not p.exists():
+        raise HTTPException(
+            status_code=404,
+            detail="no eval results yet — run: python -m sentinel.evaluate",
+        )
+    return json.loads(p.read_text())
 
 
 @router.get("/v1/audit", response_model=list[AuditEntry])

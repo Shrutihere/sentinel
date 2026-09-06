@@ -30,5 +30,12 @@ class Settings(BaseSettings):
     # --- Approvals (M3) --- optional Slack webhook for human-in-the-loop notices.
     slack_webhook_url: str | None = None
 
+    # --- Dashboard (M5) ---
+    cors_origins: list[str] = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+    ]
+    eval_results_path: str = "eval/results.json"
+
 
 settings = Settings()

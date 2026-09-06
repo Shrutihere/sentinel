@@ -4,6 +4,7 @@ Run locally:  uvicorn sentinel.main:app --reload  (from the src/ dir or with PYT
 """
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from . import models  # noqa: F401  (ensure models are registered on Base before create_all)
 from .config import settings
@@ -20,6 +21,14 @@ def create_app() -> FastAPI:
 
     # M0: create tables on startup. Real migrations (Alembic) come with Postgres later.
     Base.metadata.create_all(bind=engine)
+
+    # M5: allow the React dashboard (dev server) to call the API.
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=settings.cors_origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
     app.include_router(router)
 

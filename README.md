@@ -13,8 +13,10 @@ Agent → Identity → Policy → Risk Evaluation → Approval → Tool → Audi
 ```
 
 Unlike off-the-shelf MCP gateways, the differentiator is the **risk brain + its eval harness**: a
-hybrid scorer (deterministic guardrails + a Claude contextual risk model) measured against a labeled
-benchmark of safe / risky / destructive / adversarial actions.
+hybrid scorer (deterministic guardrails + an LLM contextual risk model, Gemini/Claude) measured against
+a labeled benchmark of safe / risky / destructive / adversarial actions.
+
+![Sentinel dashboard — evaluation benchmark](docs/dashboard-eval.png)
 
 ## Status
 
@@ -25,7 +27,7 @@ Built in milestones (see `../cv/agent-risk-eval-scope.md` for the full scope):
 - [x] **M2 — ⭐ Risk engine** — hybrid deterministic guardrails + LLM contextual scorer (Gemini/Claude/Mock)
 - [x] **M3 — Approval workflow** — durable human-in-the-loop approve/deny with attribution + idempotency
 - [x] **M4 — ⭐ Eval harness + labeled dataset** — 62-case benchmark; 97.8% catch, 2.2% false-approve, 100% injection catch
-- [ ] M5 — React dashboard, Docker, live deploy
+- [x] **M5 (in progress)** — ✅ React dashboard · ⬜ Docker/compose · ⬜ live deploy
 
 ## Quickstart
 
@@ -71,6 +73,21 @@ Contextual LLM scorer vs. a naive keyword heuristic, same benchmark:
 Note: exact-decision accuracy (~68%) trails catch-rate because the engine tends to *escalate* borderline
 destructive actions to human approval rather than hard-deny — a deliberately conservative, tunable
 precision/recall tradeoff (the severity→decision threshold matrix). Nothing unsafe is auto-allowed.
+
+## Dashboard
+
+A React console (`dashboard/`) to drive and observe the control plane: **Simulate** an agent tool-call,
+work the **Approvals** queue (approve/deny), read the append-only **Audit** trail, and view the
+**Evaluation** benchmark. Run it against a local API:
+
+```bash
+uvicorn sentinel.main:app --port 8000     # API  (terminal 1)
+cd dashboard && npm install && npm run dev # UI   (terminal 2 → http://localhost:5173)
+```
+
+| Approvals queue | Audit trail |
+|---|---|
+| ![approvals](docs/dashboard-approvals.png) | ![audit](docs/dashboard-audit.png) |
 
 ## Architecture
 
